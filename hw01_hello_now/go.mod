@@ -1,4 +1,4 @@
-module github.com/810411/hw01_hello_now
+module github.com/810411/otus-go/hw01_hello_now
 
 go 1.14
 
