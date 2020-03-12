@@ -7,7 +7,10 @@ import (
 	"unicode"
 )
 
-const Backslash = 92
+const (
+	Backslash = 92
+	Step      = 1
+)
 
 var ErrInvalidString = errors.New("invalid string")
 
@@ -22,7 +25,7 @@ func Unpack(s string) (string, error) {
 			if i == 0 || (i > 0 && unicode.IsDigit(ra[i-1]) && (i > 1 && ra[i-2] != Backslash)) {
 				return "", ErrInvalidString
 			}
-			res.WriteString(strings.Repeat(string(ra[i-1]), n-1))
+			res.WriteString(strings.Repeat(string(ra[i-1]), n-Step))
 		} else {
 			res.WriteRune(ra[i])
 		}
