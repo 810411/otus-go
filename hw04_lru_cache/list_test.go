@@ -48,4 +48,18 @@ func TestList(t *testing.T) {
 		}
 		require.Equal(t, []int{50, 30, 10, 40, 60, 80, 70}, elems)
 	})
+
+	t.Run("various type values list", func(t *testing.T) {
+		l := NewList()
+		l.PushFront(10)
+		l.PushBack("twenty")
+		l.PushBack([2]rune{'3', '0'})
+		elems := make([]interface{}, 0, l.Len())
+		for i := l.Front(); i != nil; i = i.Prev {
+			elems = append(elems, i.Value.(interface{}))
+			l.Remove(i)
+		}
+		require.Equal(t, []interface{}{10, "twenty", [2]rune{'3', '0'}}, elems)
+		require.Equal(t, l.Len(), 0)
+	})
 }
