@@ -1,6 +1,7 @@
 package hw05_parallel_execution //nolint:golint,stylecheck
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"sync/atomic"
@@ -62,5 +63,25 @@ func TestRun(t *testing.T) {
 
 		require.Equal(t, int32(tasksCount), runTasksCount, "not all tasks were completed")
 		require.LessOrEqual(t, int64(elapsedTime), int64(sumTime/2), "tasks were run sequentially?")
+	})
+
+	t.Run("run <count> tasks in <count> go", func(t *testing.T) {
+		var completed int64
+		tasksCount := 10
+		tasks := make([]Task, tasksCount)
+
+		for i := 0; i < tasksCount; i++ {
+			tasks[i] = func() error {
+				atomic.AddInt64(&completed, 1)
+				if i%2 == 0 {
+					return errors.New("")
+				}
+				return nil
+			}
+		}
+
+		_ = Run(tasks, tasksCount, 0)
+
+		require.Equal(t, int64(tasksCount), completed, "not all tasks were completed")
 	})
 }
