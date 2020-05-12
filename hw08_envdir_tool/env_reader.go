@@ -39,9 +39,9 @@ func ReadDir(dir string) (Environment, error) {
 			delete(result, filename)
 			continue
 		}
-		b = bytes.ReplaceAll(b, []byte("\x00"), []byte("\n"))
+		b = bytes.ReplaceAll(bytes.Split(b, []byte("\n"))[0], []byte("\x00"), []byte("\n"))
 
-		value := strings.TrimRight(string(bytes.Split(b, []byte("\n"))[0]), " \t\n")
+		value := strings.TrimRight(string(b), " \t\n")
 		if strings.ContainsRune(value, '=') {
 			continue
 		}
