@@ -12,10 +12,6 @@ import (
 )
 
 func TestRunCmd(t *testing.T) {
-	// test empty cmd
-	assert.Panics(t, func() { RunCmd(nil, nil) })
-	assert.Panics(t, func() { RunCmd([]string{}, nil) })
-
 	// test non existent cmd
 	assert.Error(t, errors.New("executable file not found in $PATH"), func() { RunCmd([]string{"nonexistent_cmd"}, nil) })
 
