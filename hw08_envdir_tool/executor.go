@@ -1,13 +1,21 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/exec"
 )
 
+const (
+	ExitSuccess = 0
+	ExitFailure = 1
+)
+
 // RunCmd runs a command + arguments (cmd) with environment variables from env.
 func RunCmd(cmd []string, env Environment) (returnCode int) {
+	if len(cmd) == 0 {
+		return ExitFailure
+	}
+
 	name, args := cmd[0], cmd[1:]
 
 	proc := exec.Command(name, args...)
@@ -25,8 +33,8 @@ func RunCmd(cmd []string, env Environment) (returnCode int) {
 	}
 
 	if err := proc.Run(); err != nil {
-		log.Fatal(err)
+		return ExitFailure
 	}
 
-	return 0
+	return ExitSuccess
 }
