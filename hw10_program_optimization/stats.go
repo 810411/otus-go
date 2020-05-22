@@ -1,9 +1,9 @@
 package hw10_program_optimization //nolint:golint,stylecheck
 
 import (
+	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strings"
 
 	jsoniter "github.com/json-iterator/go"
@@ -35,19 +35,24 @@ type users [100000]User
 
 func getUsers(r io.Reader) (*users, error) {
 	var result users
-	content, err := ioutil.ReadAll(r)
-	if err != nil {
-		return &result, err
-	}
 
-	lines := strings.Split(string(content), "\n")
-	for i, line := range lines {
+	reader := bufio.NewReader(r)
+	for i := 0; ; i++ {
+		line, _, err := reader.ReadLine()
+		if err != nil {
+			if err == io.EOF {
+				break
+			} else {
+				return &result, err
+			}
+		}
 		var user User
-		if err = json.Unmarshal([]byte(line), &user); err != nil {
+		if err = json.Unmarshal(line, &user); err != nil {
 			return &result, err
 		}
 		result[i] = user
 	}
+
 	return &result, nil
 }
 
