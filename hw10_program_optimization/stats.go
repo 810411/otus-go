@@ -57,9 +57,14 @@ func countDomains(u users, domain string) (DomainStat, error) {
 	suf := b.String()
 
 	result := make(DomainStat)
+	idxs := make(map[string]string)
+
 	for _, user := range u {
-		if strings.HasSuffix(user.Email, suf) {
-			result[strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])]++
+		if user.Email != "" && suf != "" && strings.HasSuffix(user.Email, suf) {
+			if idxs[user.Email] == "" {
+				idxs[user.Email] = strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])
+			}
+			result[idxs[user.Email]]++
 		}
 	}
 	return result, nil
