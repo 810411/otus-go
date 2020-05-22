@@ -28,44 +28,36 @@ func GetDomainStat(r io.Reader, domain string) (DomainStat, error) {
 	if err != nil {
 		return nil, fmt.Errorf("get users error: %s", err)
 	}
-	return countDomains(u, domain)
+	return countDomains(u, domain), nil
 }
 
-type users [100_000]User
+type users [100000]User
 
-func getUsers(r io.Reader) (result users, err error) {
+func getUsers(r io.Reader) (*users, error) {
+	var result users
 	content, err := ioutil.ReadAll(r)
 	if err != nil {
-		return
+		return &result, err
 	}
 
 	lines := strings.Split(string(content), "\n")
 	for i, line := range lines {
 		var user User
 		if err = json.Unmarshal([]byte(line), &user); err != nil {
-			return
+			return &result, err
 		}
 		result[i] = user
 	}
-	return
+	return &result, nil
 }
 
-func countDomains(u users, domain string) (DomainStat, error) {
-	var b strings.Builder
-	b.WriteRune('.')
-	b.WriteString(domain)
-	suf := b.String()
-
+func countDomains(u *users, domain string) DomainStat {
 	result := make(DomainStat)
-	idxs := make(map[string]string)
 
 	for _, user := range u {
-		if user.Email != "" && suf != "" && strings.HasSuffix(user.Email, suf) {
-			if idxs[user.Email] == "" {
-				idxs[user.Email] = strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])
-			}
-			result[idxs[user.Email]]++
+		if user.Email != "" && domain != "" && strings.HasSuffix(user.Email, domain) {
+			result[strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])]++
 		}
 	}
-	return result, nil
+	return result
 }

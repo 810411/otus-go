@@ -46,19 +46,16 @@ func TestGetDomainStat(t *testing.T) {
 func Test_countDomains(t *testing.T) {
 	uArr := users{user, user, user, user, user, user}
 	t.Run("counting", func(t *testing.T) {
-		result, err := countDomains(uArr, "gov")
-		require.NoError(t, err)
+		result := countDomains(&uArr, "gov")
 		require.Equal(t, DomainStat{"browsedrive.gov": 6}, result)
 	})
 	t.Run("nil users", func(t *testing.T) {
 		var u users
-		result, err := countDomains(u, "gov")
-		require.NoError(t, err)
+		result := countDomains(&u, "gov")
 		require.Equal(t, DomainStat{}, result)
 	})
 	t.Run("empty domain", func(t *testing.T) {
-		result, err := countDomains(uArr, "")
-		require.NoError(t, err)
+		result := countDomains(&uArr, "")
 		require.Equal(t, DomainStat{}, result)
 	})
 }
@@ -67,7 +64,7 @@ func Test_getUsers(t *testing.T) {
 	t.Run("unmarshal", func(t *testing.T) {
 		result, err := getUsers(bytes.NewBufferString(shortData))
 		require.NoError(t, err)
-		require.Equal(t, users{user}, result)
+		require.Equal(t, &users{user}, result)
 	})
 }
 
