@@ -42,10 +42,10 @@ func getUsers(r io.Reader) (*users, error) {
 		if err != nil {
 			if err == io.EOF {
 				break
-			} else {
-				return &result, err
 			}
+			return &result, err
 		}
+
 		var user User
 		if err = json.Unmarshal(line, &user); err != nil {
 			return &result, err
