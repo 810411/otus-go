@@ -1,13 +1,15 @@
 package hw10_program_optimization //nolint:golint,stylecheck
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"regexp"
 	"strings"
+
+	jsoniter "github.com/json-iterator/go"
 )
+
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 type User struct {
 	ID       int
@@ -49,18 +51,15 @@ func getUsers(r io.Reader) (result users, err error) {
 }
 
 func countDomains(u users, domain string) (DomainStat, error) {
+	var b strings.Builder
+	b.WriteRune('.')
+	b.WriteString(domain)
+	suf := b.String()
+
 	result := make(DomainStat)
-
 	for _, user := range u {
-		matched, err := regexp.Match("\\."+domain, []byte(user.Email))
-		if err != nil {
-			return nil, err
-		}
-
-		if matched {
-			num := result[strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])]
-			num++
-			result[strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])] = num
+		if strings.HasSuffix(user.Email, suf) {
+			result[strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])]++
 		}
 	}
 	return result, nil
