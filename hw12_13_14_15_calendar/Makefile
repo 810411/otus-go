@@ -1,10 +1,19 @@
 build:
-	go build ./... -o calendar
+	go build -o calendar cmd/calendar/calendar.go
 
 test:
-	go test -race ./...
+	go test -v -count=1 -race -gcflags=-l -timeout=30s ./...
+
+install:
+	go mod download
+
+install-deps:
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
 lint:
 	golangci-lint run ./...
+
+migrate:
+	goose -dir migrations/ postgres "host=localhost port=5432 user=otus password=otus dbname=calendar sslmode=disable" up
 
 .PHONY: build
