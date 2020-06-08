@@ -1,4 +1,4 @@
-module github.com/810411/otus-go/hw_calendar
+module github.com/810411/otus-go/hw12_13_14_15_calendar
 
 go 1.14
 
