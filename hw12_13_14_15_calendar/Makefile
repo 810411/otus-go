@@ -10,7 +10,7 @@ install:
 install-deps:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
-lint:
+lint: install-deps
 	golangci-lint run ./...
 
 migrate:
