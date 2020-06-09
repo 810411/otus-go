@@ -1,11 +1,8 @@
 package server
 
 import (
-	"context"
 	"fmt"
 	"net/http"
-	"os"
-	"os/signal"
 	"time"
 
 	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/logger"
@@ -16,39 +13,16 @@ type Settings struct {
 	Port string
 }
 
-const shutdownTime = 5 * time.Second
-
-func Start(ctx context.Context, s Settings) (err error) {
-	e := make(chan error)
-
+func New(s Settings) *http.Server {
 	handler := http.HandlerFunc(handle)
 	http.Handle("/", logMiddleware(handler))
-	srv := &http.Server{
+	return &http.Server{
 		Addr: s.Host + ":" + s.Port,
 	}
-
-	go func(e chan<- error) {
-		e <- srv.ListenAndServe()
-	}(e)
-
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-
-	select {
-	case err = <-e:
-		return
-	case <-c:
-	}
-
-	ctx, cancel := context.WithTimeout(ctx, shutdownTime)
-	defer cancel()
-	err = srv.Shutdown(ctx)
-
-	return
 }
 
 func handle(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(3 * time.Second)
+	time.Sleep(1 * time.Second)
 	_, _ = fmt.Fprint(w, r, time.Now())
 }
 

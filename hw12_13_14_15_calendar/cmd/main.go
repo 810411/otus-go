@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -9,7 +9,7 @@ import (
 	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/config"
 	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/logger"
 	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/repository"
-	inMemory "github.com/810411/otus-go/hw12_13_14_15_calendar/internal/repository/in-memory"
+	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/repository/inmemory"
 	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/repository/psql"
 	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/server"
 	flag "github.com/spf13/pflag"
@@ -44,26 +44,21 @@ func main() {
 
 	var r repository.EventsRepo
 	switch conf.Repository.Type {
-	case "in_memory":
-		r = inMemory.New()
 	case "psql":
 		r = psql.New()
 	default:
-		r = inMemory.New()
-	}
-	a, err := app.New(r)
-	if err != nil {
-		log.Fatalf("can't create app: %v", err)
+		r = inmemory.New()
 	}
 
-	ctx := context.Background()
+	s := server.New(server.Settings(conf.HTTP))
 
-	go func() {
-		_ = a.Run(ctx)
-	}()
-
-	err = server.Start(ctx, server.Settings(conf.HTTP))
+	a, err := app.New(r, s)
 	if err != nil {
-		log.Fatalf("can't start serve: %v", err)
+		logg.Fatal(fmt.Sprintf("can't create app: %v", err))
+	}
+
+	err = a.Run()
+	if err != nil {
+		logg.Fatal(fmt.Sprintf("when app run: %v", err))
 	}
 }

@@ -1,4 +1,4 @@
-package memory //nolint:golint,stylecheck
+package inmemory //nolint:golint,stylecheck
 
 import (
 	"context"
