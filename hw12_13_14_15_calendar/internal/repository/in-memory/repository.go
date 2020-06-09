@@ -9,15 +9,15 @@ import (
 )
 
 type Repo struct {
+	mx    sync.RWMutex
 	Store map[repository.EventID]repository.Event
-	sync.RWMutex
 	idInc uint64
 }
 
 func New() *Repo {
-	r := new(Repo)
-	r.Store = make(map[repository.EventID]repository.Event)
-	return r
+	return &Repo{
+		Store: make(map[repository.EventID]repository.Event),
+	}
 }
 
 func (r *Repo) forEach(ctx context.Context, fn func(event repository.Event) error) error {
@@ -37,8 +37,8 @@ func (r *Repo) forEach(ctx context.Context, fn func(event repository.Event) erro
 }
 
 func (r *Repo) Create(ctx context.Context, event repository.Event) (repository.Event, error) {
-	r.Lock()
-	defer r.Unlock()
+	r.mx.Lock()
+	defer r.mx.Unlock()
 
 	event.Datetime = event.Datetime.Round(time.Minute)
 	err := r.forEach(ctx, func(v repository.Event) error {
@@ -59,8 +59,8 @@ func (r *Repo) Create(ctx context.Context, event repository.Event) (repository.E
 }
 
 func (r *Repo) Update(ctx context.Context, event repository.Event) (repository.Event, error) {
-	r.Lock()
-	defer r.Unlock()
+	r.mx.Lock()
+	defer r.mx.Unlock()
 
 	if _, ok := r.Store[event.ID]; !ok {
 		return event, repository.ErrNotFound
@@ -83,8 +83,8 @@ func (r *Repo) Update(ctx context.Context, event repository.Event) (repository.E
 }
 
 func (r *Repo) Delete(ctx context.Context, id repository.EventID) (repository.EventID, error) {
-	r.Lock()
-	defer r.Unlock()
+	r.mx.Lock()
+	defer r.mx.Unlock()
 
 	if _, ok := r.Store[id]; !ok {
 		return id, repository.ErrNotFound
@@ -95,8 +95,8 @@ func (r *Repo) Delete(ctx context.Context, id repository.EventID) (repository.Ev
 }
 
 func (r *Repo) listOf(ctx context.Context, from time.Time, p repository.Period) (events []repository.Event, err error) {
-	r.RLock()
-	defer r.RUnlock()
+	r.mx.RLock()
+	defer r.mx.RUnlock()
 
 	from, to := repository.GetTimeRange(from, p)
 

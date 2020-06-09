@@ -2,10 +2,11 @@ package logger //nolint:golint,stylecheck
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func Test_Logger(t *testing.T) {
