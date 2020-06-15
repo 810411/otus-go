@@ -2,7 +2,6 @@ package hw10_program_optimization //nolint:golint,stylecheck
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"strings"
 
@@ -12,30 +11,24 @@ import (
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 type User struct {
-	ID       int
-	Name     string
-	Username string
+	ID       int    `json:"-"`
+	Name     string `json:"-"`
+	Username string `json:"-"`
 	Email    string
-	Phone    string
-	Password string
-	Address  string
+	Phone    string `json:"-"`
+	Password string `json:"-"`
+	Address  string `json:"-"`
 }
 
 type DomainStat map[string]int
 
 func GetDomainStat(r io.Reader, domain string) (DomainStat, error) {
-	u, err := getUsers(r)
-	if err != nil {
-		return nil, fmt.Errorf("get users error: %s", err)
-	}
-	return countDomains(u, domain), nil
+	return getUsers(r, domain)
 }
 
-type users [100000]User
-
-func getUsers(r io.Reader) (*users, error) {
-	var result users
-
+func getUsers(r io.Reader, domain string) (DomainStat, error) {
+	var result = make(DomainStat, 1000)
+	var user User
 	reader := bufio.NewReader(r)
 	for i := 0; ; i++ {
 		line, _, err := reader.ReadLine()
@@ -43,26 +36,14 @@ func getUsers(r io.Reader) (*users, error) {
 			if err == io.EOF {
 				break
 			}
-			return &result, err
+			return result, err
 		}
-
-		var user User
-		if err = json.Unmarshal(line, &user); err != nil {
-			return &result, err
+		if err := json.Unmarshal(line, &user); err != nil {
+			return result, err
 		}
-		result[i] = user
-	}
-
-	return &result, nil
-}
-
-func countDomains(u *users, domain string) DomainStat {
-	result := make(DomainStat)
-
-	for _, user := range u {
-		if user.Email != "" && domain != "" && strings.HasSuffix(user.Email, domain) {
-			result[strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])]++
+		if strings.HasSuffix(user.Email, domain) {
+			result[strings.ToLower(strings.Split(user.Email, "@")[1])]++
 		}
 	}
-	return result
+	return result, nil
 }
