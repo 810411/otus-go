@@ -60,15 +60,20 @@ func TestUserValidation(t *testing.T) {
 	})
 
 	t.Run("phones slice", func(t *testing.T) {
-		// Write me :)
-		t.Fail()
+		u := goodUser
+		u.Phones = []string{"00000000000", "00000000000"}
+		requireNoValidationErrors(t, u)
+		u.Phones = []string{"00000000000", "0"}
+		errs, err := u.Validate()
+		require.Nil(t, err)
+		requireOneFieldErr(t, errs, "Phones[i]")
 	})
 
 	t.Run("many errors", func(t *testing.T) {
 		u := goodUser
+		u.ID = "1"
 		u.Age = -100
 		u.Email = "123"
-		u.Role = "unknown"
 
 		errs, err := u.Validate()
 		require.Nil(t, err)
@@ -77,7 +82,14 @@ func TestUserValidation(t *testing.T) {
 		for _, e := range errs {
 			fields = append(fields, e.Field)
 		}
-		require.ElementsMatch(t, fields, []string{"Age", "Email", "Role"})
+		require.ElementsMatch(t, fields, []string{"ID", "Age", "Email"})
+	})
+
+	t.Run("no validate if not tag 'validate'", func(t *testing.T) {
+		u := goodUser
+		u.Name = "Name"
+
+		requireNoValidationErrors(t, goodUser)
 	})
 }
 
