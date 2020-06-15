@@ -30,7 +30,10 @@ func main() {
 	if err := c.Connect(); err != nil {
 		log.Fatal(err)
 	}
-	defer c.Close()
+	defer func() {
+		err := c.Close()
+		log.Fatal(err)
+	}()
 
 	var wg sync.WaitGroup
 	wg.Add(2)
