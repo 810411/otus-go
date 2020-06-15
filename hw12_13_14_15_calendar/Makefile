@@ -2,7 +2,7 @@ build:
 	go build -o calendar cmd/main.go
 
 test:
-	go test -v -count=1 -race -gcflags=-l -timeout=30s ./...
+	go test -v -count=1 -race -timeout=30s ./...
 
 install:
 	go mod download

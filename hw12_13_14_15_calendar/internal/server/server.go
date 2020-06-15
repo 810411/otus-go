@@ -15,7 +15,7 @@ type Settings struct {
 
 func New(s Settings) *http.Server {
 	handler := http.HandlerFunc(handle)
-	http.Handle("/", logMiddleware(handler))
+	http.Handle("/", LogMiddleware(handler))
 	return &http.Server{
 		Addr: s.Host + ":" + s.Port,
 	}
@@ -26,7 +26,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprint(w, r, time.Now())
 }
 
-func logMiddleware(h http.Handler) http.Handler {
+func LogMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
 		h.ServeHTTP(w, r)

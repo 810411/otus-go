@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"strings"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -14,7 +16,7 @@ var Logger *zap.Logger
 
 func Configure(s Settings) (err error) {
 	var level zap.AtomicLevel
-	switch s.Level {
+	switch strings.ToLower(s.Level) {
 	case "warn":
 		level = zap.NewAtomicLevelAt(zap.WarnLevel)
 	case "error":

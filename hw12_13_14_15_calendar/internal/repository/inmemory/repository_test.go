@@ -149,7 +149,7 @@ func Test_Repo(t *testing.T) {
 			{Datetime: time.Unix(36*hour, 0)},
 			{Datetime: time.Unix(49*hour, 0)},
 		}
-		want := ""
+		var want string
 
 		for _, v := range events {
 			event, err := r.Create(ctx, v)

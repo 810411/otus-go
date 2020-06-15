@@ -46,6 +46,11 @@ func main() {
 	switch conf.Repository.Type {
 	case "psql":
 		r = psql.New()
+		defer func() {
+			if err = r.(repository.BaseRepo).Close(); err != nil {
+				logg.Error(fmt.Sprintf("when closed repo: %v", err))
+			}
+		}()
 	default:
 		r = inmemory.New()
 	}

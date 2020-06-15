@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/jackc/pgconn"
 	// Import Postgres sql driver
 	_ "github.com/jackc/pgx/v4/stdlib"
 
@@ -41,15 +42,6 @@ func (r *Repo) Create(ctx context.Context, event repository.Event) (repository.E
 		_ = tx.Rollback()
 	}()
 
-	if err = check(
-		ctx, tx,
-		`SELECT id FROM events WHERE datetime = $1 AND owner_id = $2`,
-		event.Datetime.Format("2006-01-02 15:04:00 -0700"),
-		event.OwnerID,
-	); err != nil {
-		return event, err
-	}
-
 	err = tx.QueryRowContext(
 		ctx,
 		`INSERT INTO events (title, datetime, duration, description, owner_id) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
@@ -60,6 +52,10 @@ func (r *Repo) Create(ctx context.Context, event repository.Event) (repository.E
 		event.OwnerID,
 	).Scan(&event.ID)
 	if err != nil {
+		pgErr, ok := err.(*pgconn.PgError)
+		if ok && pgErr.Code == "23505" {
+			return event, repository.ErrTimeBusy
+		}
 		return event, err
 	}
 
@@ -79,16 +75,6 @@ func (r *Repo) Update(ctx context.Context, event repository.Event) (repository.E
 		_ = tx.Rollback()
 	}()
 
-	if err = check(
-		ctx, tx,
-		`SELECT id FROM events WHERE id != $1 AND datetime = $2 AND owner_id = $3`,
-		event.ID,
-		event.Datetime.Format("2006-01-02 15:04:00 -0700"),
-		event.OwnerID,
-	); err != nil {
-		return event, err
-	}
-
 	res, err := tx.ExecContext(
 		ctx,
 		`UPDATE events SET title = $1, datetime = $2, duration = $3, description = $4, updated_at = $5 WHERE id = $6`,
@@ -100,6 +86,10 @@ func (r *Repo) Update(ctx context.Context, event repository.Event) (repository.E
 		event.ID,
 	)
 	if err != nil {
+		pgErr, ok := err.(*pgconn.PgError)
+		if ok && pgErr.Code == "23505" {
+			return event, repository.ErrTimeBusy
+		}
 		return event, err
 	}
 
@@ -145,11 +135,11 @@ func (r *Repo) listOf(ctx context.Context, from time.Time, p repository.Period) 
 		from.Format("2006-01-02"),
 		to.Format("2006-01-02"),
 	)
-	//nolint:staticcheck
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+
+	defer rows.Close()
 
 	for rows.Next() {
 		var (
@@ -192,17 +182,4 @@ func (r *Repo) ListOfWeek(ctx context.Context, from time.Time) ([]repository.Eve
 
 func (r *Repo) ListOfMonth(ctx context.Context, from time.Time) ([]repository.Event, error) {
 	return r.listOf(ctx, from, repository.Month)
-}
-
-func check(ctx context.Context, tx *sql.Tx, query string, args ...interface{}) error {
-	var id int64
-
-	err := tx.QueryRowContext(ctx, query, args...).Scan(&id)
-	if err == sql.ErrNoRows {
-		return nil
-	} else if err != nil {
-		return err
-	}
-
-	return repository.ErrTimeBusy
 }
