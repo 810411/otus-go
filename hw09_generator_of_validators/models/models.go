@@ -2,7 +2,8 @@ package models
 
 type UserRole string
 
-// NOTE: Several struct specs in one type declaration are allowed
+//go:generate go-validate $GOFILE
+// NOTE: Several struct specs in one type declaration are allowed.
 type (
 	User struct {
 		ID     string `json:"id" validate:"len:36"`
