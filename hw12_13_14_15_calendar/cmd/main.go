@@ -8,10 +8,6 @@ import (
 	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/app"
 	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/config"
 	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/logger"
-	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/repository"
-	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/repository/inmemory"
-	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/repository/psql"
-	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/server"
 	flag "github.com/spf13/pflag"
 )
 
@@ -42,22 +38,7 @@ func main() {
 	logg.Info("calendar start")
 	defer logg.Info("\ncalendar end")
 
-	var r repository.EventsRepo
-	switch conf.Repository.Type {
-	case "psql":
-		r = psql.New()
-		defer func() {
-			if err = r.(repository.BaseRepo).Close(); err != nil {
-				logg.Error(fmt.Sprintf("when closed repo: %v", err))
-			}
-		}()
-	default:
-		r = inmemory.New()
-	}
-
-	s := server.New(server.Settings(conf.HTTP))
-
-	a, err := app.New(r, s)
+	a, err := app.New(conf)
 	if err != nil {
 		logg.Fatal(fmt.Sprintf("can't create app: %v", err))
 	}
