@@ -20,8 +20,6 @@ func handle404(w http.ResponseWriter, r *http.Request) {
 }
 
 func createEvent(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	var event repository.Event
 	err := json.NewDecoder(r.Body).Decode(&event)
 	if err != nil {
@@ -37,15 +35,10 @@ func createEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	result.Status = statusOk
 
-	err = json.NewEncoder(w).Encode(result)
-	if err != nil {
-		writeError(w, Error{HTTPCode: http.StatusInternalServerError, Message: err.Error()})
-		return
-	}
+	writeResponse(w, result)
 }
 
 func updateEvent(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 
 	id, err := strconv.Atoi(params["id"])
@@ -70,15 +63,10 @@ func updateEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	result.Status = statusOk
 
-	err = json.NewEncoder(w).Encode(result)
-	if err != nil {
-		writeError(w, Error{HTTPCode: http.StatusInternalServerError, Message: err.Error()})
-		return
-	}
+	writeResponse(w, result)
 }
 
 func deleteEvent(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 
 	id, err := strconv.Atoi(params["id"])
@@ -95,16 +83,10 @@ func deleteEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	result.Status = statusOk
 
-	err = json.NewEncoder(w).Encode(result)
-	if err != nil {
-		writeError(w, Error{HTTPCode: http.StatusInternalServerError, Message: err.Error()})
-		return
-	}
+	writeResponse(w, result)
 }
 
 func getEvents(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	var p repository.Period
 	params := mux.Vars(r)
 	switch params["period"] {
@@ -147,9 +129,5 @@ func getEvents(w http.ResponseWriter, r *http.Request) {
 	}
 	result.Status = statusOk
 
-	err = json.NewEncoder(w).Encode(result)
-	if err != nil {
-		writeError(w, Error{HTTPCode: http.StatusInternalServerError, Message: err.Error()})
-		return
-	}
+	writeResponse(w, result)
 }

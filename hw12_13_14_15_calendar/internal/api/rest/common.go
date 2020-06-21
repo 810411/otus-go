@@ -57,3 +57,11 @@ func writeError(w http.ResponseWriter, e Error) {
 	w.WriteHeader(e.HTTPCode)
 	_, _ = fmt.Fprint(w, string(b))
 }
+
+func writeResponse(w http.ResponseWriter, result interface{}) {
+	err := json.NewEncoder(w).Encode(result)
+	if err != nil {
+		writeError(w, Error{HTTPCode: http.StatusInternalServerError, Message: err.Error()})
+		return
+	}
+}
