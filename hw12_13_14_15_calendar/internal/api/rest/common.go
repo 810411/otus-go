@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	ErrWrongPeriod     = errors.New("wrong period param")
+	ErrWrongPeriod     = errors.New("wrong period param (cases: day, week, month)")
 	ErrDatetimeMissing = errors.New("missing datetime query param")
 )
 
