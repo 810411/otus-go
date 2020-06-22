@@ -134,7 +134,9 @@ func Test_UpdateEvent(t *testing.T) {
 
 		err = json.NewDecoder(rr.Body).Decode(&got)
 		require.NoError(t, err)
-		require.Equal(t, want, got)
+		require.Equal(t, 0, int(got.Event.ID))
+		require.Equal(t, want.Event.Duration, got.Event.Duration)
+		require.Equal(t, "updated", got.Event.Description)
 	})
 
 	t.Run("update not ok", func(t *testing.T) {
