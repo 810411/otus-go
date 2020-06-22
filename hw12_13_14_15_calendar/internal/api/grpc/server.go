@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+//go:generate protoc --proto_path=../../../api/grpcpb --go_out=plugins=grpc:../../../api/grpcpb ../../../api/grpcpb/events.proto
 type Service struct {
 	ctx      context.Context
 	repo     repository.EventsRepo

@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+option go_package="grpcpb";
+
+message Event {
+  uint64 id = 1;
+  string title = 2;
+  google.protobuf.Timestamp datetime = 3;
+  google.protobuf.Duration duration = 4;
+  string description = 5;
+  uint64 owner_id = 6;
+}
+
+message From {
+  google.protobuf.Timestamp from = 1;
+}
+
+service Events {
+  rpc Create(CreateRequest) returns (CreateResponse) {};
+  rpc Update(UpdateRequest) returns (UpdateResponse) {};
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {};
+  rpc ListOfDate(ListOfRequest) returns (ListOfResponse) {};
+  rpc ListOfWeek(ListOfRequest) returns (ListOfResponse) {};
+  rpc ListOfMonth(ListOfRequest) returns (ListOfResponse) {};
+}
+
+message CreateRequest {
+  Event event = 1;
+}
+
+message CreateResponse {
+  Event event = 1;
+}
+
+message UpdateRequest {
+  uint64 id = 1;
+  Event event = 2;
+}
+
+message UpdateResponse {
+  Event event = 1;
+}
+
+message DeleteRequest {
+  uint64 id = 1;
+}
+
+message DeleteResponse {
+  uint64 id = 1;
+}
+
+message ListOfRequest {
+  google.protobuf.Timestamp from = 1;
+}
+
+message ListOfResponse {
+  repeated Event event = 1;
+}

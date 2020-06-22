@@ -21,7 +21,7 @@ func LogMiddleware(h http.Handler) http.Handler {
 		h.ServeHTTP(w, r)
 		latency := time.Since(startTime)
 
-		info := fmt.Sprintf("%s [%s] %s %s %s %d %s \"%s\"",
+		logger.Logger.Info(fmt.Sprintf("%s [%s] %s %s %s %d %s \"%s\"",
 			r.RemoteAddr,
 			time.Now().Format("2006-01-02 15:04:05 -0700"),
 			r.Method,
@@ -30,7 +30,6 @@ func LogMiddleware(h http.Handler) http.Handler {
 			http.StatusOK,
 			latency,
 			r.UserAgent(),
-		)
-		logger.Logger.Info(info)
+		))
 	})
 }
