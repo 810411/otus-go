@@ -5,7 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/app"
+	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/app/calendar"
+
 	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/config"
 	"github.com/810411/otus-go/hw12_13_14_15_calendar/internal/logger"
 	flag "github.com/spf13/pflag"
@@ -38,7 +39,7 @@ func main() {
 	logg.Info("calendar start")
 	defer logg.Info("\ncalendar end")
 
-	a, err := app.New(conf)
+	a, err := calendar.New(conf)
 	if err != nil {
 		logg.Fatal(fmt.Sprintf("can't create app: %v", err))
 	}

@@ -12,7 +12,15 @@
     "level": ""
   },
   "repository": {
-    "type": "in-memory",
-    "dsn": ""
+    "type": "psql",
+    "dsn": "host=localhost port=5432 user=otus password=otus dbname=calendar sslmode=disable"
+  },
+  "amqp": {
+    "uri": "amqp://guest:guest@localhost:5672",
+    "queue": "calendar"
+  },
+  "schedule": {
+    "period": "1m",
+    "remind_for": "1h"
   }
 }

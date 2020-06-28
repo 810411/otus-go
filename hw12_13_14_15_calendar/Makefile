@@ -1,5 +1,7 @@
 build:
-	go build -o calendar cmd/main.go
+	go build -o calendar cmd/calendar/main.go
+	go build -o calendar_sender ./cmd/calendar_sender/main.go
+	go build -o calendar_scheduler ./cmd/calendar_scheduler/main.go
 
 test:
 	go test -v -count=1 -race -timeout=30s ./...

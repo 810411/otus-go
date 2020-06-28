@@ -22,6 +22,14 @@ type Config struct {
 		Type string `json:"type"`
 		Dsn  string `json:"dsn"`
 	} `json:"repository"`
+	AMQP struct {
+		URI   string `json:"uri"`
+		Queue string `json:"queue"`
+	} `json:"amqp"`
+	Schedule struct {
+		Period    string `json:"period"`
+		RemindFor string `json:"remind_for"`
+	}
 }
 
 func ParseConfig(path string) (*Config, error) {

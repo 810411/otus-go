@@ -183,3 +183,54 @@ func (r *Repo) ListOfWeek(ctx context.Context, from time.Time) ([]repository.Eve
 func (r *Repo) ListOfMonth(ctx context.Context, from time.Time) ([]repository.Event, error) {
 	return r.listOf(ctx, from, repository.Month)
 }
+
+func (r *Repo) ClearMoreYearBefore(ctx context.Context) error {
+	hourInDay := 24 * time.Hour
+	daysInYear := 365 * hourInDay
+	yNow := time.Now().Year()
+	if yNow%4 == 0 && (yNow%100 != 0 || yNow%400 == 0) {
+		daysInYear = 366 * hourInDay
+	}
+	yearAgoStr := time.Now().Add(-1 * daysInYear).Format("2006-01-02 15:04:00 -0700")
+
+	_, err := r.db.ExecContext(ctx, `DELETE FROM events WHERE datetime < $1`, yearAgoStr)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repo) ListForScheduler(ctx context.Context, remindFor time.Duration, period time.Duration) ([]repository.Notice, error) {
+	var notices []repository.Notice
+	from := time.Now().Add(remindFor)
+	to := from.Add(period)
+
+	rows, err := r.db.QueryContext(
+		ctx,
+		`SELECT id, title, datetime, owner_id FROM events WHERE datetime >= $1 AND datetime < $2`,
+		from.Format("2006-01-02 15:04:00 -0700"),
+		to.Format("2006-01-02 15:04:00 -0700"),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var notice repository.Notice
+
+		if err := rows.Scan(
+			&notice.ID,
+			&notice.Title,
+			&notice.Datetime,
+			&notice.OwnerID,
+		); err != nil {
+			return nil, err
+		}
+
+		notices = append(notices, notice)
+	}
+
+	return notices, rows.Err()
+}

@@ -12,3 +12,10 @@ type Event struct {
 	Description string        `json:"description"`
 	OwnerID     uint64        `json:"owner_id"`
 }
+
+type Notice struct {
+	ID       EventID   `json:"id"`
+	Title    string    `json:"title"`
+	Datetime time.Time `json:"datetime"`
+	OwnerID  uint64    `json:"owner_id"`
+}
