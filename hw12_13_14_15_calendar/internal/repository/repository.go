@@ -17,5 +17,7 @@ type EventsRepo interface {
 type BaseRepo interface {
 	Connect(ctx context.Context, dsn string) error
 	Close() error
+	ClearMoreYearBefore(ctx context.Context) error
+	ListForScheduler(ctx context.Context, remindFor time.Duration, period time.Duration) ([]Notice, error)
 	EventsRepo
 }
