@@ -10,6 +10,10 @@ type Config struct {
 		Host string `json:"host"`
 		Port string `json:"port"`
 	} `json:"http"`
+	GRPC struct {
+		Host string `json:"host"`
+		Port string `json:"port"`
+	} `json:"grpc"`
 	Log struct {
 		File  string `json:"file"`
 		Level string `json:"level"`

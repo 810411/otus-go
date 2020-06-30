@@ -1,6 +1,14 @@
 package repository
 
-import "time"
+import (
+	"errors"
+	"time"
+)
+
+var (
+	ErrTimeBusy = errors.New("event's time busy")
+	ErrNotFound = errors.New("not found")
+)
 
 type Period int
 
