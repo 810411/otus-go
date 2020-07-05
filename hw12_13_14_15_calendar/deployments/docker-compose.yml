@@ -1,0 +1,95 @@
+version: "3.3"
+services:
+  calendar:
+    container_name: calendar
+    build:
+      context: ..
+      dockerfile: ./deployments/calendar/Dockerfile
+    restart: on-failure
+    ports:
+      - "8888:8888"
+      - "50051:50051"
+    command: --config /configs/calendar.json
+    networks:
+      - calendar
+    volumes:
+      - "../configs:/configs"
+    depends_on:
+      - goose
+
+  calendar_scheduler:
+    container_name: calendar_scheduler
+    build:
+      context: ..
+      dockerfile: ./deployments/calendar_scheduler/Dockerfile
+    restart: on-failure
+    command: --config /configs/calendar_scheduler.json
+    networks:
+      - calendar
+    volumes:
+      - "../configs:/configs"
+    depends_on:
+      - goose
+      - rabbit
+
+  calendar_sender:
+    container_name: calendar_sender
+    build:
+      context: ..
+      dockerfile: ./deployments/calendar_sender/Dockerfile
+    restart: on-failure
+    command: --config /configs/calendar_sender.json
+    networks:
+      - calendar
+    volumes:
+      - "../configs:/configs"
+    depends_on:
+      - rabbit
+
+  goose:
+    container_name: calendar_goose
+    build:
+      context: ..
+      dockerfile: ./deployments/goose/Dockerfile
+    restart: on-failure
+    environment:
+      GOOSE_DRIVER: postgres
+      GOOSE_DBSTRING: "host=calendar_postgres port=5432 user=otus password=otus dbname=calendar sslmode=disable"
+    command: -dir /migrations up
+    networks:
+      - calendar
+    volumes:
+    - "../migrations:/migrations"
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: calendar_postgres
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: otus
+      POSTGRES_PASSWORD: otus
+      POSTGRES_DB: calendar
+    ports:
+      - "5432:5432"
+    networks:
+      - calendar
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  rabbit:
+    container_name: calendar_rabbit
+    image: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+    networks:
+      - calendar
+
+networks:
+  calendar:
+    driver: bridge
+
+volumes:
+  db_data:
