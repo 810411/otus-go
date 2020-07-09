@@ -21,10 +21,6 @@ func (f *feature) iSendRequestTo(method, endpoint string) error {
 }
 
 func (f *feature) iSendRequestToWithJsonBody(method, endpoint string, message *messages.PickleStepArgument_PickleDocString) error {
-	if host != "" {
-		endpoint = strings.Replace(endpoint, "localhost", host, 1)
-	}
-
 	var body io.Reader
 	if message != nil {
 		body = strings.NewReader(message.Content)

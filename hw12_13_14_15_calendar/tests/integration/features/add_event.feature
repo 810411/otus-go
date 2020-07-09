@@ -5,7 +5,7 @@ Feature: add event
   I need to add an event
 
   Scenario: successfully adding event
-    When I send "POST" request to "http://localhost:8888/events" with json body:
+    When I send "POST" request to "http://calendar:8888/events" with json body:
       """
         {
           "title": "test",
@@ -31,7 +31,7 @@ Feature: add event
       """
 
   Scenario: error - event's time busy
-    When I send "POST" request to "http://localhost:8888/events" with json body:
+    When I send "POST" request to "http://calendar:8888/events" with json body:
       """
         {
           "title": "test",
@@ -52,7 +52,7 @@ Feature: add event
       """
 
   Scenario: add event with same datetime but other user id
-    When I send "POST" request to "http://localhost:8888/events" with json body:
+    When I send "POST" request to "http://calendar:8888/events" with json body:
       """
         {
           "title": "test",
@@ -78,7 +78,7 @@ Feature: add event
       """
 
   Scenario: add event with new datetime
-    When I send "POST" request to "http://localhost:8888/events" with json body:
+    When I send "POST" request to "http://calendar:8888/events" with json body:
       """
         {
           "title": "test",
@@ -104,7 +104,7 @@ Feature: add event
       """
 
   Scenario: wrong request method
-    When I send "GET" request to "http://localhost:8888/events" with json body:
+    When I send "GET" request to "http://calendar:8888/events" with json body:
       """
         {
           "title": "test",

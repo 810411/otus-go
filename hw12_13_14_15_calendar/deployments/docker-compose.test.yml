@@ -5,10 +5,6 @@ services:
     build:
       context: ..
       dockerfile: ./deployments/tests/Dockerfile
-    environment:
-      HOST: calendar
-    networks:
-      - calendar
     depends_on:
       - calendar
       - calendar_scheduler
@@ -24,8 +20,6 @@ services:
       - "8888:8888"
       - "50051:50051"
     command: --config /configs/calendar.json
-    networks:
-      - calendar
     volumes:
       - "../configs:/configs"
     depends_on:
@@ -38,8 +32,6 @@ services:
       dockerfile: ./deployments/calendar_scheduler/Dockerfile
     restart: on-failure
     command: --config /configs/calendar_scheduler.json
-    networks:
-      - calendar
     volumes:
       - "../configs:/configs"
     depends_on:
@@ -53,8 +45,6 @@ services:
       dockerfile: ./deployments/calendar_sender/Dockerfile
     restart: on-failure
     command: --config /configs/calendar_sender.json
-    networks:
-      - calendar
     volumes:
       - "../configs:/configs"
     depends_on:
@@ -70,8 +60,6 @@ services:
       GOOSE_DRIVER: postgres
       GOOSE_DBSTRING: "host=calendar_postgres port=5432 user=otus password=otus dbname=calendar sslmode=disable"
     command: -dir /migrations up
-    networks:
-      - calendar
     volumes:
     - "../migrations:/migrations"
     depends_on:
@@ -87,8 +75,6 @@ services:
       POSTGRES_DB: calendar
     ports:
       - "5432:5432"
-    networks:
-      - calendar
 
   rabbit:
     container_name: calendar_rabbit
@@ -96,9 +82,3 @@ services:
     restart: unless-stopped
     ports:
       - "5672:5672"
-    networks:
-      - calendar
-
-networks:
-  calendar:
-    driver: bridge

@@ -10,7 +10,7 @@ integration-tests:
 	set -e ;\
     docker-compose -f ./deployments/docker-compose.test.yml up --build -d ;\
     test_status_code=0 ;\
-    docker-compose -f ./deployments/docker-compose.test.yml run integration_tests || test_status_code=$$? ;\
+    docker-compose -f ./deployments/docker-compose.test.yml run integration_tests go test -v || test_status_code=$$? ;\
     docker-compose -f ./deployments/docker-compose.test.yml down ;\
     exit $$test_status_code ;\
 

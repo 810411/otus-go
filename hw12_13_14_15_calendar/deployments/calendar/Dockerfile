@@ -3,10 +3,14 @@ LABEL stage=builder
 
 WORKDIR /app
 
+COPY go.mod ./
+COPY go.sum ./
+
+RUN go mod download
+
 COPY . .
 
-RUN go mod download \
-    && go build -o calendar cmd/calendar/main.go
+RUN go build -o calendar cmd/calendar/main.go
 
 FROM alpine:latest
 

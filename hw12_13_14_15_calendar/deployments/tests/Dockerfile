@@ -5,5 +5,3 @@ WORKDIR /tests
 COPY ./tests/integration .
 
 RUN go mod download
-
-CMD ["go", "test", "-v"]

@@ -11,11 +11,7 @@ import (
 
 const wait = 13 * time.Second
 
-var host string
-
 func TestMain(m *testing.M) {
-	host = os.Getenv("HOST")
-
 	log.Printf("waiting %s while starting", wait)
 	time.Sleep(wait)
 

@@ -5,7 +5,7 @@ Feature: list events
   I need to get list of event
 
   Scenario: list of day
-    When I send "GET" request to "http://localhost:8888/events/day?datetime=2020-07-01T00:00:00%2B0000"
+    When I send "GET" request to "http://calendar:8888/events/day?datetime=2020-07-01T00:00:00%2B0000"
     Then the response code should be 200
     And the response should match json:
       """
@@ -19,7 +19,7 @@ Feature: list events
       """
 
   Scenario: list of week
-    When I send "GET" request to "http://localhost:8888/events/week?datetime=2020-07-01T00:00:00%2B0000"
+    When I send "GET" request to "http://calendar:8888/events/week?datetime=2020-07-01T00:00:00%2B0000"
     Then the response code should be 200
     And the response should match json:
       """
@@ -33,7 +33,7 @@ Feature: list events
       """
 
   Scenario: list of month
-    When I send "GET" request to "http://localhost:8888/events/month?datetime=2020-07-01T00:00:00%2B0000"
+    When I send "GET" request to "http://calendar:8888/events/month?datetime=2020-07-01T00:00:00%2B0000"
     Then the response code should be 200
     And the response should match json:
       """
@@ -48,7 +48,7 @@ Feature: list events
       """
 
   Scenario: list of eternity
-    When I send "GET" request to "http://localhost:8888/events/eternity?datetime=2020-07-01T00:00:00%2B0000"
+    When I send "GET" request to "http://calendar:8888/events/eternity?datetime=2020-07-01T00:00:00%2B0000"
     Then the response code should be 400
     And the response should match json:
       """
@@ -61,11 +61,11 @@ Feature: list events
       """
 
   Scenario: list of nothing
-    When I send "GET" request to "http://localhost:8888/events?datetime=2020-07-01T00:00:00%2B0000"
+    When I send "GET" request to "http://calendar:8888/events?datetime=2020-07-01T00:00:00%2B0000"
     Then the response code should be 405
 
   Scenario: without datetime
-    When I send "GET" request to "http://localhost:8888/events/day"
+    When I send "GET" request to "http://calendar:8888/events/day"
     Then the response code should be 400
     And the response should match json:
       """
@@ -78,15 +78,15 @@ Feature: list events
       """
 
   Scenario: wrong request method
-    When I send "PATCH" request to "http://localhost:8888/events/day?datetime=2020-07-01T00:00:00%2B0000"
+    When I send "PATCH" request to "http://calendar:8888/events/day?datetime=2020-07-01T00:00:00%2B0000"
     Then the response code should be 405
 
   Scenario: get something else
-    When I send "GET" request to "http://localhost:8888/chicks"
+    When I send "GET" request to "http://calendar:8888/chicks"
     Then the response code should be 404
 
   Scenario: get from period where don't have events
-    When I send "GET" request to "http://localhost:8888/events/day?datetime=2222-07-01T00:00:00%2B0000"
+    When I send "GET" request to "http://calendar:8888/events/day?datetime=2222-07-01T00:00:00%2B0000"
     Then the response code should be 200
     And the response should match json:
       """
