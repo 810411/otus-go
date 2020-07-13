@@ -1,0 +1,10 @@
+{
+  "log": {
+    "file": "",
+    "level": ""
+  },
+  "amqp": {
+    "uri": "amqp://guest:guest@rabbit:5672",
+    "queue": "calendar"
+  }
+}

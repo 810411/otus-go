@@ -6,6 +6,14 @@ build:
 test:
 	go test -v -count=1 -race -timeout=30s ./...
 
+integration-tests:
+	set -e ;\
+    docker-compose -f ./deployments/docker-compose.test.yml up --build -d ;\
+    test_status_code=0 ;\
+    docker-compose -f ./deployments/docker-compose.test.yml run integration_tests go test -v || test_status_code=$$? ;\
+    docker-compose -f ./deployments/docker-compose.test.yml down ;\
+    exit $$test_status_code ;\
+
 install:
 	go mod download
 
@@ -20,5 +28,11 @@ migrate:
 
 generate:
 	go generate ./...
+
+up:
+	docker-compose -f ./deployments/docker-compose.yml up
+
+down:
+	docker-compose -f ./deployments/docker-compose.yml down
 
 .PHONY: build

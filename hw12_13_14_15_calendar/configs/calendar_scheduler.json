@@ -1,0 +1,18 @@
+{
+  "log": {
+    "file": "",
+    "level": ""
+  },
+  "repository": {
+    "type": "psql",
+    "dsn": "host=postgres port=5432 user=otus password=otus dbname=calendar sslmode=disable"
+  },
+  "amqp": {
+    "uri": "amqp://guest:guest@rabbit:5672",
+    "queue": "calendar"
+  },
+  "schedule": {
+    "period": "1m",
+    "remind_for": "1h"
+  }
+}
